@@ -1,0 +1,38 @@
+@startuml
+title dev-env
+
+cloud "cloud" {
+  package "repository" {
+    frame "frame" {
+      [backup]
+    }
+  }
+}
+
+node "office" {
+
+}
+
+node "personal machine" {
+  database "working data" {
+  }
+  database "working data" {
+  }
+  frame "vagrant + virtual box" {
+    frame "virtual machine + ansible" {
+      [Firefox]
+      frame "Docker" {
+        [Container]
+        note left : vim
+
+        vim
+      }
+    }
+    
+}
+}
+
+"repository" .. "working data" : git
+[backup] .. [File] : FTP
+
+@enduml
