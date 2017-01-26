@@ -1,4 +1,6 @@
+node_modules
 package.json
+index.json
 *.swp
 *.jar
 /dst/*

@@ -3,6 +3,7 @@ var path = require('path');
 var plantuml = require('gulp-plantuml');
 var webserver = require('gulp-webserver');
 var print = require('gulp-print');
+var tap = require('gulp-tap');
 var exec = require('gulp-exec');
 var ejs = require('gulp-ejs');
 var rename = require('gulp-rename');
@@ -42,6 +43,7 @@ gulp.task('ejs', function() {
 gulp.task('plantuml', function() {
 	gulp.src('./src/*.pu')
 	.pipe(cached('plantuml'))
+	.pipe(plumber())
 	.pipe(plantuml({
 		jarPath: "/usr/bin/plantuml.jar"
 	}))
@@ -54,9 +56,8 @@ gulp.task('plantuml', function() {
 gulp.task('img', function() {
 	gulp.src('./dst/*.png')
 	  .pipe(cached('img'))
-	  .pipe(print(function(filepath) {
-	    var img_name = path.basename(filepath);
-	    //img_name = img_name.replace('\.pu','');
+	  .pipe(tap(function(file, t) {
+	    var img_name = path.basename(file.path);
 	    console.log(img_name);
 	    gulp.src('./')
 	      //.pipe(exec("echo "+img_name+" > src/ejs/template/_uml.ejs"));
@@ -76,4 +77,4 @@ gulp.task('watch', function() {
 	gulp.src('gulpfile.js');
 });
 
-gulp.task('default', ['plantuml', 'watch', 'webserver', 'ejs']);
+gulp.task('default', ['plantuml', 'watch', 'webserver', 'ejs', 'img']);
