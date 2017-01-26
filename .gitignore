@@ -3,5 +3,6 @@ package.json
 !index.json
 *.swp
 *.jar
+*/src/*
 /dst/*
 !/dst/.gitkeep
