@@ -3,6 +3,7 @@ package.json
 !index.json
 *.swp
 *.jar
+*.log
 src
 /dst/*
 !/dst/.gitkeep
