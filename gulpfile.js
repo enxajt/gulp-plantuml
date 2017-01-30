@@ -32,38 +32,34 @@ gulp.task('webserver',function() {
     }));
 });
 
-// gulp.task('last', function() {
-//   var last = JSON.parse(fs.readFileSync(_path.last));
-//   return gulp.src([
-//       "./ejs/**/*.ejs",
-//       "!./ejs/template/*",
-//       "!./ejs/var/*"])
-//       .pipe(ejs({
-// 	      jsonData: last 
-//       }))
-//     .pipe(rename('last.html'))
-//     .pipe(gulp.dest(_path.dst));
-// });
-
-gulp.task('all', function() {
-  return gulp.src(_path.dst+'/*.png')
-	.pipe(print(function(filepath){
-		return "test: " + filepath;
-	}));
+gulp.task('ejs', function() {
   var pages = JSON.parse(fs.readFileSync(_path._var+"/pages.json")).pages;
   for (var i=0; i<pages.length; i++) {
     return gulp.src([
-        "./ejs/**/*.ejs"
-//	    ,
-//        "!./ejs/template/*.ejs",
-//        "!./ejs/var/*.json"
-	    ])
+        "./ejs/**/*.ejs",
+        "!./ejs/template/*.ejs"])
       .pipe(ejs({
 	      jsonData: pages[i]
       }))
       .pipe(rename(pages[i].id+'.html'))
       .pipe(gulp.dest(_path.dst));
   } 
+});
+
+gulp.task('pages', function() {
+  var imgs=[];
+  gulp.src(_path.dst+'/*.png')
+    .pipe(print(function(filepath){
+      return "test: " + filepath;
+      imgs.push(filepath);
+    }));
+    gulp.src(_path.dst+'/*.png')
+      .pipe(print());
+  var allPages = JSON.stringify(imgs);
+  gulp.src(_path._var+"/pages.json")
+        .pipe(jsonTransform(function(data, file) {
+  	  return allPages;
+        }))
 });
 
 gulp.task('img', function() {
@@ -108,9 +104,9 @@ gulp.task('plantuml', function() {
 gulp.task('watch', function() {
 //	gulp.watch([_path.last],['last']);
 	gulp.watch([_path.dst+'/*.png'],['img']);
-	gulp.watch(['./ejs/var/_error.ejs'],['all']);
+	gulp.watch(['./ejs/var/_error.ejs'],['pages']);
 	gulp.watch([_path.src+'/*.pu'],['plantuml']);
 	gulp.src('gulpfile.js');
 });
 
-gulp.task('default', ['watch', 'webserver','plantuml','all']);
+gulp.task('default', ['watch', 'webserver','plantuml','pages','ejs']);
