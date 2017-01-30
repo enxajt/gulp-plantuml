@@ -14,11 +14,11 @@ var jsonTransform = require('gulp-json-transform');
 var through = require('through2');
 
 var _path = {
-	src : './src',
-	dst : './dst',
-	_var : './ejs/var',
-	last : './ejs/var'+'/last.json',
-	_error : './ejs/var'+'/_error.ejs'
+  src : './src',
+  dst : './dst',
+  _var : './ejs/var',
+  last : './ejs/var'+'/last.json',
+  _error : './ejs/var'+'/_error.ejs'
 };
 
 gulp.task('webserver',function() {
@@ -39,7 +39,7 @@ gulp.task('ejs', function() {
         "./ejs/**/*.ejs",
         "!./ejs/template/*.ejs"])
       .pipe(ejs({
-	      jsonData: pages[i]
+        jsonData: pages[i]
       }))
       .pipe(rename(pages[i].id+'.html'))
       .pipe(gulp.dest(_path.dst));
@@ -58,7 +58,7 @@ gulp.task('pages', function() {
   var allPages = JSON.stringify(imgs);
   gulp.src(_path._var+"/pages.json")
         .pipe(jsonTransform(function(data, file) {
-  	  return allPages;
+      return allPages;
         }))
 });
 
@@ -69,11 +69,11 @@ gulp.task('img', function() {
       var img_name = path.basename(file.path);
       gulp.src(_path.last)
         .pipe(jsonTransform(function(data, file) {
-  	  return {
-		id: img_name,
-		title: img_name,
-  	  	img: img_name
-  	  };
+      return {
+    id: img_name,
+    title: img_name,
+        img: img_name
+      };
         }))
         .pipe(gulp.dest(_path._var));
       gulp.src('./')
@@ -86,7 +86,7 @@ gulp.task('plantuml', function() {
   .pipe(cached('plantuml'))
   .pipe(plumber())
   .pipe(plantuml({
-  	jarPath: "/usr/bin/plantuml.jar"
+    jarPath: "/usr/bin/plantuml.jar"
   }))
   .on('error',function(error){
       console.log('XXX: '+error.message);
@@ -97,16 +97,16 @@ gulp.task('plantuml', function() {
   .pipe(gulp.dest(_path.dst))
   .pipe(gulp.dest(_path.src))
   .pipe(print(function(filepath) {
-  	return "planted: " + filepath;
+    return "planted: " + filepath;
   }));
 });
 
 gulp.task('watch', function() {
-//	gulp.watch([_path.last],['last']);
-	gulp.watch([_path.dst+'/*.png'],['img']);
-	gulp.watch(['./ejs/var/_error.ejs'],['pages']);
-	gulp.watch([_path.src+'/*.pu'],['plantuml']);
-	gulp.src('gulpfile.js');
+//  gulp.watch([_path.last],['last']);
+  gulp.watch([_path.dst+'/*.png'],['img']);
+  gulp.watch(['./ejs/var/_error.ejs'],['pages']);
+  gulp.watch([_path.src+'/*.pu'],['plantuml']);
+  gulp.src('gulpfile.js');
 });
 
 gulp.task('default', ['watch', 'webserver','plantuml','pages','ejs']);
