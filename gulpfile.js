@@ -10,15 +10,11 @@ var rename = require('gulp-rename');
 var cached = require('gulp-cached');
 var plumber = require('gulp-plumber');
 var fs = require('fs');
-var jsonTransform = require('gulp-json-transform');
-var through = require('through2');
 
 var _path = {
   src : './src',
   dst : './dst',
-  _var : './ejs/var',
-  last : './ejs/var'+'/last.json',
-  _error : './ejs/var'+'/_error.ejs'
+  ejs : './ejs'
 };
 
 gulp.task('webserver',function() {
@@ -33,51 +29,24 @@ gulp.task('webserver',function() {
 });
 
 gulp.task('ejs', function() {
-  var pages = JSON.parse(fs.readFileSync(_path._var+"/pages.json")).pages;
-  for (var i=0; i<pages.length; i++) {
-    return gulp.src([
-        "./ejs/**/*.ejs",
-        "!./ejs/template/*.ejs"])
-      .pipe(ejs({
-        jsonData: pages[i]
-      }))
-      .pipe(rename(pages[i].id+'.html'))
-      .pipe(gulp.dest(_path.dst));
-  } 
-});
-
-gulp.task('pages', function() {
-  var imgs=[];
-  gulp.src(_path.dst+'/*.png')
-    .pipe(print(function(filepath){
-      return "test: " + filepath;
-      imgs.push(filepath);
-    }));
-    gulp.src(_path.dst+'/*.png')
-      .pipe(print());
-  var allPages = JSON.stringify(imgs);
-  gulp.src(_path._var+"/pages.json")
-        .pipe(jsonTransform(function(data, file) {
-      return allPages;
-        }))
-});
-
-gulp.task('img', function() {
   return gulp.src(_path.src+'/*.png')
-    .pipe(cached('img'))
-    .pipe(tap(function(file, t) {
-      var img_name = path.basename(file.path);
-      gulp.src(_path.last)
-        .pipe(jsonTransform(function(data, file) {
-      return {
-    id: img_name,
-    title: img_name,
-        img: img_name
-      };
+    .pipe(cached('ejs'))
+    .pipe(tap(function(file,t) {
+      var img_file = path.basename(file.path);
+      var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
+      console.log(img_name);
+      gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
+        .pipe(ejs({
+          img_file: img_file,
+          img_name: img_name
         }))
-        .pipe(gulp.dest(_path._var));
+        .pipe(rename(img_name+'.html'))
+        .pipe(gulp.dest(_path.dst))
+        .pipe(print(function(filepath) {
+          return "ejs: " + filepath;
+        }));
       gulp.src('./')
-        .pipe(exec('echo > ./ejs/var/_error.ejs'));
+        .pipe(exec('echo > ./ejs/_error.ejs'));
     }));
 });
 
@@ -89,12 +58,15 @@ gulp.task('plantuml', function() {
     jarPath: "/usr/bin/plantuml.jar"
   }))
   .on('error',function(error){
-      console.log('XXX: '+error.message);
+      console.log(error.message);
       gulp.src('./')
-        .pipe(exec('echo "'+error.message+'" >> ./ejs/var/_error.ejs'));
+        .pipe(exec('echo "'+error.message+'" >> ./ejs/_error.ejs'));
       this.emit('end');
   })
   .pipe(gulp.dest(_path.dst))
+  .pipe(print(function(filepath) {
+    return "planted: " + filepath;
+  }))
   .pipe(gulp.dest(_path.src))
   .pipe(print(function(filepath) {
     return "planted: " + filepath;
@@ -102,11 +74,10 @@ gulp.task('plantuml', function() {
 });
 
 gulp.task('watch', function() {
-//  gulp.watch([_path.last],['last']);
-  gulp.watch([_path.dst+'/*.png'],['img']);
-  gulp.watch(['./ejs/var/_error.ejs'],['pages']);
+  gulp.watch([_path.dst+'/*.png'],['ejs']);
+  gulp.watch([_path.ejs+'/_error.ejs'],['ejs']);
   gulp.watch([_path.src+'/*.pu'],['plantuml']);
   gulp.src('gulpfile.js');
 });
 
-gulp.task('default', ['watch', 'webserver','plantuml','pages','ejs']);
+gulp.task('default', ['watch', 'webserver','plantuml','ejs']);
