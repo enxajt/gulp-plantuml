@@ -29,7 +29,7 @@ gulp.task('webserver',function() {
 });
 
 gulp.task('ejs', function() {
-  return gulp.dst(_path.src+'/*.png')
+  return gulp.src(_path.dst+'/*.png')
     .pipe(cached('ejs'))
     .pipe(tap(function(file,t) {
       var img_file = path.basename(file.path);
