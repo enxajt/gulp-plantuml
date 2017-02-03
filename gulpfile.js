@@ -89,4 +89,4 @@ gulp.task('watch', function() {
   gulp.src('gulpfile.js');
 });
 
-gulp.task('default', ['watch', 'webserver','plantuml','ejs']);
+gulp.task('default', ['watch', 'webserver','plantuml']);
