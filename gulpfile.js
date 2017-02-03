@@ -35,7 +35,7 @@ gulp.task('ejs', function() {
     .pipe(tap(function(file,t) {
       var img_file = path.basename(file.path);
       var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
-      console.log('before ejs: '+img_name);
+      console.log('before ejs: '+img_file);
       gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
         .pipe(ejs({
           img_file: img_file,
