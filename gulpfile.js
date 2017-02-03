@@ -12,6 +12,7 @@ var plumber = require('gulp-plumber');
 var fs = require('fs');
 
 var _path = {
+  dropbox : './Notes',
   src : './src',
   dst : './dst',
   ejs : './ejs'
@@ -34,7 +35,7 @@ gulp.task('ejs', function() {
     .pipe(tap(function(file,t) {
       var img_file = path.basename(file.path);
       var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
-      console.log(img_name);
+      console.log('before ejs: '+img_name);
       gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
         .pipe(ejs({
           img_file: img_file,
@@ -67,7 +68,7 @@ gulp.task('plantuml', function() {
   .pipe(print(function(filepath) {
     return "planted: " + filepath;
   }))
-  .pipe(gulp.dest(_path.src))
+  .pipe(gulp.dest(_path.dropbox))
   .pipe(print(function(filepath) {
     return "planted: " + filepath;
   }));
