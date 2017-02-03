@@ -29,12 +29,14 @@ gulp.task('webserver',function() {
     }));
 });
 
+//TODO ejs 共通化
+
 gulp.task('ejs_error', function() {
   return gulp.src(_path.dst+'/*.png')
     .pipe(tap(function(file,t) {
       var img_file = path.basename(file.path);
       var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
-      console.log('ejs_error: '+img_file);
+      console.log('ejs_error_before: '+img_file);
       gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
         .pipe(ejs({
           img_file: img_file,
@@ -43,10 +45,8 @@ gulp.task('ejs_error', function() {
         .pipe(rename(img_name+'.html'))
         .pipe(gulp.dest(_path.dst))
         .pipe(print(function(filepath) {
-          return "ejs: " + filepath;
+          return "ejs_error: " + filepath;
         }));
-      gulp.src('./')
-        .pipe(exec('echo > ./ejs/_error.ejs'));
     }));
 });
 
@@ -65,7 +65,7 @@ gulp.task('ejs_image', function() {
         .pipe(rename(img_name+'.html'))
         .pipe(gulp.dest(_path.dst))
         .pipe(print(function(filepath) {
-          return "ejs: " + filepath;
+          return "ejs_image: " + filepath;
         }));
       gulp.src('./')
         .pipe(exec('echo > ./ejs/_error.ejs'));
@@ -96,10 +96,10 @@ gulp.task('plantuml', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch([_path.dst+'/*.png'],['ejs_error']);
-  gulp.watch([_path.ejs+'/_error.ejs'],['ejs_image']);
+  gulp.watch([_path.dst+'/*.png'],['ejs_image']);
+  gulp.watch([_path.ejs+'/_error.ejs'],['ejs_error']);
   gulp.watch([_path.src+'/*.pu'],['plantuml']);
   gulp.src('gulpfile.js');
 });
 
-gulp.task('default', ['watch', 'webserver','plantuml','ejs']);
+gulp.task('default', ['watch', 'webserver','plantuml','ejs_image']);
