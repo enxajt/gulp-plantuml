@@ -10,7 +10,6 @@ var rename = require('gulp-rename');
 var cached = require('gulp-cached');
 var plumber = require('gulp-plumber');
 var fs = require('fs');
-var runSequence = require('run-sequence');
 
 var _path = {
   dropbox : './Notes',
@@ -31,33 +30,46 @@ gulp.task('webserver',function() {
 });
 
 gulp.task('ejs_error', function() {
-  //return gulp.src(_path.ejs+'/_error.ejs')
+  return gulp.src(_path.dst+'/*.png')
+    .pipe(tap(function(file,t) {
+      var img_file = path.basename(file.path);
+      var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
+      console.log('ejs_error: '+img_file);
+      gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
+        .pipe(ejs({
+          img_file: img_file,
+          img_name: img_name
+        }))
+        .pipe(rename(img_name+'.html'))
+        .pipe(gulp.dest(_path.dst))
+        .pipe(print(function(filepath) {
+          return "ejs: " + filepath;
+        }));
+      gulp.src('./')
+        .pipe(exec('echo > ./ejs/_error.ejs'));
+    }));
 });
 
 gulp.task('ejs_image', function() {
   return gulp.src(_path.dst+'/*.png')
-    .pipe(cached('ejs_image'))
-    .pipe(tap(function(file) {
-      runSequence('ejs', file);
+    .pipe(cached('ejs'))
+    .pipe(tap(function(file,t) {
+      var img_file = path.basename(file.path);
+      var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
+      console.log('before ejs: '+img_file);
+      gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
+        .pipe(ejs({
+          img_file: img_file,
+          img_name: img_name
+        }))
+        .pipe(rename(img_name+'.html'))
+        .pipe(gulp.dest(_path.dst))
+        .pipe(print(function(filepath) {
+          return "ejs: " + filepath;
+        }));
+      gulp.src('./')
+        .pipe(exec('echo > ./ejs/_error.ejs'));
     }));
-});
-
-gulp.task('ejs', function(file) {
-  var img_file = path.basename(file.path);
-  var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
-  console.log('before ejs: '+img_file);
-  gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
-    .pipe(ejs({
-      img_file: img_file,
-      img_name: img_name
-    }))
-    .pipe(rename(img_name+'.html'))
-    .pipe(gulp.dest(_path.dst))
-    .pipe(print(function(filepath) {
-      return "ejs: " + filepath;
-    }));
-  gulp.src('./')
-    .pipe(exec('echo > ./ejs/_error.ejs'));
 });
 
 gulp.task('plantuml', function() {
@@ -90,4 +102,4 @@ gulp.task('watch', function() {
   gulp.src('gulpfile.js');
 });
 
-gulp.task('default', ['watch', 'webserver','plantuml']);
+gulp.task('default', ['watch', 'webserver','plantuml','ejs']);
