@@ -10,6 +10,7 @@ var rename = require('gulp-rename');
 var cached = require('gulp-cached');
 var plumber = require('gulp-plumber');
 var fs = require('fs');
+var runSequence = require('run-sequence');
 
 var _path = {
   dropbox : './Notes',
