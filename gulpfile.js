@@ -37,7 +37,7 @@ gulp.task('ejs_error', function() {
 gulp.task('ejs_image', function() {
   return gulp.src(_path.dst+'/*.png')
     .pipe(cached('ejs_image'))
-    .pipe(tap(function(file,t) {
+    .pipe(tap(function(file) {
       runSequence('ejs', file);
     }));
 });
