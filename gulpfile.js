@@ -89,9 +89,9 @@ gulp.task('plantuml', function() {
   }))
   .pipe(gulp.dest(_path.dropbox))
   .pipe(print(function(filepath) {
-    return "planted: " + filepath;
     gulp.src('./')
       .pipe(exec('echo > ./ejs/_error.ejs'));
+    return "planted: " + filepath;
   }));
 });
 
