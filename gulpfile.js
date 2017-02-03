@@ -29,26 +29,34 @@ gulp.task('webserver',function() {
     }));
 });
 
-gulp.task('ejs', function() {
+gulp.task('ejs_error', function() {
+  //return gulp.src(_path.ejs+'/_error.ejs')
+});
+
+gulp.task('ejs_image', function() {
   return gulp.src(_path.dst+'/*.png')
-    .pipe(cached('ejs'))
+    .pipe(cached('ejs_image'))
     .pipe(tap(function(file,t) {
-      var img_file = path.basename(file.path);
-      var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
-      console.log('before ejs: '+img_file);
-      gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
-        .pipe(ejs({
-          img_file: img_file,
-          img_name: img_name
-        }))
-        .pipe(rename(img_name+'.html'))
-        .pipe(gulp.dest(_path.dst))
-        .pipe(print(function(filepath) {
-          return "ejs: " + filepath;
-        }));
-      gulp.src('./')
-        .pipe(exec('echo > ./ejs/_error.ejs'));
+      runSequence('ejs', file);
     }));
+});
+
+gulp.task('ejs', function(file) {
+  var img_file = path.basename(file.path);
+  var img_name = img_file.split(/\.(?=[^.]+$)/)[0];
+  console.log('before ejs: '+img_file);
+  gulp.src(["./ejs/index.html","!./ejs/*.ejs"])
+    .pipe(ejs({
+      img_file: img_file,
+      img_name: img_name
+    }))
+    .pipe(rename(img_name+'.html'))
+    .pipe(gulp.dest(_path.dst))
+    .pipe(print(function(filepath) {
+      return "ejs: " + filepath;
+    }));
+  gulp.src('./')
+    .pipe(exec('echo > ./ejs/_error.ejs'));
 });
 
 gulp.task('plantuml', function() {
@@ -75,8 +83,8 @@ gulp.task('plantuml', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch([_path.dst+'/*.png'],['ejs']);
-  gulp.watch([_path.ejs+'/_error.ejs'],['ejs']);
+  gulp.watch([_path.dst+'/*.png'],['ejs_error']);
+  gulp.watch([_path.ejs+'/_error.ejs'],['ejs_image']);
   gulp.watch([_path.src+'/*.pu'],['plantuml']);
   gulp.src('gulpfile.js');
 });
