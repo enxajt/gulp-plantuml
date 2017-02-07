@@ -29,7 +29,7 @@ gulp.task('webserver',function() {
     }));
 });
 
-//TODO ejs 共通化
+//TODO ejs cut a common part 
 
 gulp.task('ejs_error', function() {
   return gulp.src(_path.dst+'/*.png')
