@@ -12,7 +12,6 @@ var plumber = require('gulp-plumber');
 var fs = require('fs');
 
 var _path = {
-  dropbox : './Notes',
   src : './src',
   dst : './dst',
   ejs : './ejs'
@@ -87,7 +86,7 @@ gulp.task('plantuml', function() {
   .pipe(print(function(filepath) {
     return "planted: " + filepath;
   }))
-  .pipe(gulp.dest(_path.dropbox))
+  .pipe(gulp.dest(_path.src))
   .pipe(print(function(filepath) {
     gulp.src('./')
       .pipe(exec('echo > ./ejs/_error.ejs'));
