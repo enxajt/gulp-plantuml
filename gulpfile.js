@@ -1,17 +1,17 @@
-var gulp = require('gulp');
-var path = require('path');
-var plantuml = require('gulp-plantuml');
-var webserver = require('gulp-webserver');
-var print = require('gulp-print');
-var tap = require('gulp-tap');
-var exec = require('gulp-exec');
-var ejs = require('gulp-ejs');
-var rename = require('gulp-rename');
-var cached = require('gulp-cached');
-var plumber = require('gulp-plumber');
-var fs = require('fs');
+const gulp = require('gulp');
+const path = require('path');
+const plantuml = require('gulp-plantuml');
+const webserver = require('gulp-webserver');
+const print = require('gulp-print');
+const tap = require('gulp-tap');
+const exec = require('gulp-exec');
+const ejs = require('gulp-ejs');
+const rename = require('gulp-rename');
+const cached = require('gulp-cached');
+const plumber = require('gulp-plumber');
+const fs = require('fs');
 
-var _path = {
+const _path = {
   src : './src',
   dst : './dst',
   ejs : './ejs'
